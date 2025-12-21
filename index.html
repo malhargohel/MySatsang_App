@@ -8,13 +8,33 @@
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     
     <style>
+        /* --- THEME COLORS --- */
         :root {
+            /* Default to Dark Mode */
             --bg-color: #121212;
             --text-color: #ffffff;
+            --text-secondary: #aaaaaa;
+            --card-bg: #1e1e1e;
+            --card-border: 1px solid #333;
             --accent-color: #FF6B6B;
+            --logo-bg: #ffffff; /* Keep white bg for transparent images */
+            --shadow: none;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        /* Auto-switch to Light Mode based on device settings */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-color: #F2F2F7;
+                --text-color: #000000;
+                --text-secondary: #666666;
+                --card-bg: #ffffff;
+                --card-border: none;
+                --logo-bg: #f0f0f0;
+                --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg-color);
@@ -22,198 +42,220 @@
             height: 100vh;
             display: flex;
             justify-content: center;
+            overflow: hidden;
         }
 
-        .mobile-container {
+        .app-container {
             width: 100%;
-            max-width: 480px;
+            max-width: 600px;
             display: flex;
             flex-direction: column;
-            padding-top: 10px;
+            background-color: var(--bg-color);
+            height: 100%;
         }
 
         /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
-        .header h1 { font-size: 20px; font-weight: 700; }
-        .icon-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
-
-        /* Month Selector */
-        .month-selector { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px 20px; }
-        .month-display { display: flex; flex-direction: column; align-items: center; }
-        .month-text { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
-        .underline { width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.5); }
-        .arrow-btn { color: #888; font-size: 24px; cursor: pointer; padding: 10px; user-select: none; }
+        .header { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 15px 20px; 
+            background-color: var(--bg-color);
+            z-index: 10;
+        }
         
-        /* Disabled state for future months */
-        .arrow-btn.disabled { opacity: 0.3; pointer-events: none; }
+        .header h1 { 
+            font-size: 20px; 
+            font-weight: 700; 
+            text-align: center;
+            flex: 1;
+        }
 
-        /* Content List */
-        .list-container { flex: 1; padding: 0 20px; overflow-y: auto; }
+        .icon-btn { 
+            background: none; 
+            border: none; 
+            color: var(--text-color); 
+            font-size: 24px; 
+            cursor: pointer; 
+            padding: 5px;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
 
-        /* Month Groups (Hidden by default) */
-        .month-group { display: none; animation: fadeIn 0.3s ease; }
-        .month-group.active { display: block; }
+        .header-spacer { width: 40px; }
+
+        /* Month Display */
+        .month-display { 
+            padding: 10px 20px 25px; 
+            display: flex;
+            flex-direction: column;
+        }
+        .month-text { 
+            font-size: 28px; 
+            font-weight: 700; 
+            color: var(--text-color);
+            letter-spacing: -0.5px;
+        }
+        .sub-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Scrollable List Area */
+        .list-container { 
+            flex: 1; 
+            padding: 0 20px 40px; 
+            overflow-y: auto; 
+        }
 
         /* Card Styles */
-        .card { display: flex; align-items: center; margin-bottom: 25px; }
+        .card { 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 20px; 
+            background-color: var(--card-bg);
+            border: var(--card-border);
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+        }
+
+        .card:active { transform: scale(0.98); }
+
+        /* Container for the image */
         .logo-box {
-            width: 70px; height: 70px; background-color: white; border-radius: 12px;
-            display: flex; justify-content: center; align-items: center; flex-shrink: 0; position: relative;
+            width: 50px; height: 50px; 
+            background-color: var(--logo-bg); 
+            border-radius: 10px;
+            display: flex; justify-content: center; align-items: center; 
+            flex-shrink: 0; 
+            position: relative;
+            overflow: hidden; /* Ensures image stays within rounded corners */
         }
-        .logo-img { width: 40px; height: 40px; object-fit: contain; }
-        .logo-text-overlay { position: absolute; bottom: 5px; text-align: center; line-height: 0.9; }
-        .logo-text-overlay div:first-child { font-size: 9px; font-weight: 900; color: black; }
-        .logo-text-overlay div:last-child { font-size: 7px; font-weight: 700; color: black; }
 
-        .card-content { margin-left: 16px; display: flex; flex-direction: column; justify-content: center; }
-        .card-title { font-size: 16px; font-weight: 500; margin-bottom: 8px; color: white; text-decoration: none; }
+        /* Style for the image itself */
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Makes sure image fills the box perfectly */
+        }
         
-        /* The Link Button */
-        .link-btn {
-            display: flex; align-items: center; text-decoration: none;
-            color: var(--accent-color); font-size: 15px; font-weight: 500; width: fit-content;
+        .card-content { 
+            margin-left: 16px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            flex: 1;
         }
-        .link-btn ion-icon { margin-right: 5px; }
+        
+        .card-title { 
+            font-size: 17px; 
+            font-weight: 600; 
+            margin-bottom: 6px; 
+            color: var(--text-color); 
+        }
+        
+        .link-btn {
+            display: flex; 
+            align-items: center; 
+            text-decoration: none;
+            color: var(--accent-color); 
+            font-size: 14px; 
+            font-weight: 600; 
+            width: fit-content;
+        }
+        .link-btn ion-icon { margin-right: 4px; font-size: 16px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="mobile-container">
+    <div class="app-container">
+        
         <header class="header">
             <button class="icon-btn"><ion-icon name="arrow-back-outline"></ion-icon></button>
             <h1>Ghar Sabha</h1>
-            <div style="width: 24px;"></div>
+            <div class="header-spacer"></div>
         </header>
 
-        <div class="month-selector">
-            <div class="arrow-btn" onclick="changeMonth(-1)"><ion-icon name="chevron-back-outline"></ion-icon></div>
-            <div class="month-display">
-                <span id="current-date-text" class="month-text">December 2025</span>
-                <div class="underline"></div>
-            </div>
-            <div class="arrow-btn" id="next-btn" onclick="changeMonth(1)"><ion-icon name="chevron-forward-outline"></ion-icon></div>
+        <div class="month-display">
+            <span id="current-month-text" class="month-text">Loading...</span>
+            <span class="sub-text">Weekly Schedule</span>
         </div>
 
-        <div id="content-wrapper" class="list-container">
+        <div class="list-container">
 
-            <div id="2025-11" class="month-group"> 
-                
-                <div class="card">
-                    <div class="logo-box">
-                        <img src="https://i.imgur.com/Q6XzY8N.png" class="logo-img">
-                        <div class="logo-text-overlay"><div>ghar</div><div>sabha</div></div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">Families of Adults (English)</div>
-                        <a href="https://t.me/c/2992101464/53" target="_blank" class="link-btn">
-                            <ion-icon name="open-outline"></ion-icon> Open
-                        </a>
-                    </div>
+            <div class="card">
+                <div class="logo-box">
+                    <img src="photo_2025-12-21_23-12-13.jpg" alt="Week 1 Image">
                 </div>
-
-                <div class="card">
-                    <div class="logo-box">
-                        <img src="https://i.imgur.com/Q6XzY8N.png" class="logo-img">
-                        <div class="logo-text-overlay"><div>ghar</div><div>sabha</div></div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">Families of Adults (Gujarati)</div>
-                        <a href="https://t.me/c/2992101464/53" target="_blank" class="link-btn">
-                            <ion-icon name="open-outline"></ion-icon> Open
-                        </a>
-                    </div>
+                <div class="card-content">
+                    <div class="card-title">Week 1</div>
+                    <a href="https://www.dropbox.com/scl/fo/d48xej7z3qm040ijw5swf/AJVwyEB4ZJi7MNt-LmTzJ10?rlkey=qkglfvlepuwxu61p7tsyowit6&st=wwpu7kv4&dl=0" target="_blank" class="link-btn">
+                        <ion-icon name="document-text-outline"></ion-icon> View Material
+                    </a>
                 </div>
-
+                <ion-icon name="chevron-forward" style="color: var(--text-secondary);"></ion-icon>
             </div>
-            <div id="2025-10" class="month-group"> 
-                
-                <div class="card">
-                    <div class="logo-box">
-                        <img src="https://i.imgur.com/Q6XzY8N.png" class="logo-img">
-                        <div class="logo-text-overlay"><div>ghar</div><div>sabha</div></div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">Families of Adults (English)</div>
-                         <a href="https://t.me/c/2992101464/42" target="_blank" class="link-btn">
-                            <ion-icon name="open-outline"></ion-icon> Open
-                        </a>
-                    </div>
-                </div>
 
-                <div class="card">
-                    <div class="logo-box">
-                        <img src="https://i.imgur.com/Q6XzY8N.png" class="logo-img">
-                        <div class="logo-text-overlay"><div>ghar</div><div>sabha</div></div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-title">Families of Teenagers (English)</div>
-                         <a href="https://t.me/c/2992101464/42" target="_blank" class="link-btn">
-                            <ion-icon name="open-outline"></ion-icon> Open
-                        </a>
-                    </div>
+            <div class="card">
+                <div class="logo-box">
+                    <img src="photo_2025-12-21_23-12-13.jpg" alt="Week 2 Image">
                 </div>
+                <div class="card-content">
+                    <div class="card-title">Week 2</div>
+                    <a href="https://www.dropbox.com/scl/fo/d48xej7z3qm040ijw5swf/AJVwyEB4ZJi7MNt-LmTzJ10?rlkey=qkglfvlepuwxu61p7tsyowit6&st=wwpu7kv4&dl=0" target="_blank" class="link-btn">
+                        <ion-icon name="document-text-outline"></ion-icon> View Material
+                    </a>
+                </div>
+                <ion-icon name="chevron-forward" style="color: var(--text-secondary);"></ion-icon>
+            </div>
 
+            <div class="card">
+                <div class="logo-box">
+                     <img src="photo_2025-12-21_23-12-13.jpg" alt="Week 3 Image">
+                </div>
+                <div class="card-content">
+                    <div class="card-title">Week 3</div>
+                    <a href="https://www.dropbox.com/scl/fo/d48xej7z3qm040ijw5swf/AJVwyEB4ZJi7MNt-LmTzJ10?rlkey=qkglfvlepuwxu61p7tsyowit6&st=wwpu7kv4&dl=0" target="_blank" class="link-btn">
+                        <ion-icon name="document-text-outline"></ion-icon> View Material
+                    </a>
+                </div>
+                <ion-icon name="chevron-forward" style="color: var(--text-secondary);"></ion-icon>
             </div>
+
+            <div class="card">
+                <div class="logo-box">
+                     <img src="photo_2025-12-21_23-12-13.jpg" alt="Week 4 Image">
+                </div>
+                <div class="card-content">
+                    <div class="card-title">Week 4</div>
+                    <a href="https://www.dropbox.com/scl/fo/d48xej7z3qm040ijw5swf/AJVwyEB4ZJi7MNt-LmTzJ10?rlkey=qkglfvlepuwxu61p7tsyowit6&st=wwpu7kv4&dl=0" target="_blank" class="link-btn">
+                        <ion-icon name="document-text-outline"></ion-icon> View Material
+                    </a>
+                </div>
+                <ion-icon name="chevron-forward" style="color: var(--text-secondary);"></ion-icon>
             </div>
+
+        </div>
     </div>
 
     <script>
-        // --- JAVASCRIPT LOGIC (ONLY HANDLES VISIBILITY) ---
-        
-        // 1. Current State
-        const maxDate = new Date(); // Locks future months based on today's real date
-        
-        // Start at December 2025 (Year 2025, Month 11)
-        let currentDate = new Date(2025, 11, 1); 
-
-        // 2. Render Function (Shows/Hides HTML Blocks)
-        function render() {
-            // Update Text
-            const dateString = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            document.getElementById('current-date-text').textContent = dateString;
-
-            // Generate ID string (e.g., "2025-11")
-            const currentId = `${currentDate.getFullYear()}-${currentDate.getMonth()}`;
-
-            // Hide all month groups
-            const allGroups = document.querySelectorAll('.month-group');
-            allGroups.forEach(group => group.classList.remove('active'));
-
-            // Show the specific month group if it exists
-            const activeGroup = document.getElementById(currentId);
-            if (activeGroup) {
-                activeGroup.classList.add('active');
-            } else {
-                // If you scroll to a month where you haven't made HTML yet, nothing shows.
-            }
-
-            // Update Arrows (Disable next if future)
-            const nextBtn = document.getElementById('next-btn');
-            const nextMonthCheck = new Date(currentDate);
-            nextMonthCheck.setMonth(currentDate.getMonth() + 1);
-
-            if (nextMonthCheck > maxDate) {
-                nextBtn.classList.add('disabled');
-            } else {
-                nextBtn.classList.remove('disabled');
-            }
-        }
-
-        // 3. Change Month Handler
-        function changeMonth(offset) {
-            const newDate = new Date(currentDate);
-            newDate.setMonth(newDate.getMonth() + offset);
-
-            if (offset > 0 && newDate > maxDate) return; 
-
-            currentDate = newDate;
-            render();
-        }
-
-        // Initial Run
-        render();
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateElement = document.getElementById('current-month-text');
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            dateElement.textContent = formattedDate;
+        });
     </script>
+
 </body>
 </html>
