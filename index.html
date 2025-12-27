@@ -4,24 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ghar Sabha</title>
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="[https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js](https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js)"></script>
+    <script nomodule src="[https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js](https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js)"></script>
     
     <style>
-        /* --- THEME COLORS --- */
+        /* --- EXISTING THEME COLORS --- */
         :root {
-            /* Default to Dark Mode */
             --bg-color: #121212;
             --text-color: #ffffff;
             --text-secondary: #aaaaaa;
             --card-bg: #1e1e1e;
             --card-border: 1px solid #333;
             --accent-color: #FF6B6B;
-            --logo-bg: #ffffff; /* Keep white bg for transparent images */
+            --logo-bg: #ffffff;
             --shadow: none;
         }
 
-        /* Auto-switch to Light Mode based on device settings */
         @media (prefers-color-scheme: light) {
             :root {
                 --bg-color: #F2F2F7;
@@ -52,130 +50,66 @@
             flex-direction: column;
             background-color: var(--bg-color);
             height: 100%;
+            position: relative;
         }
 
-        /* Header */
-        .header { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            padding: 15px 20px; 
-            background-color: var(--bg-color);
-            z-index: 10;
-        }
-        
-        .header h1 { 
-            font-size: 20px; 
-            font-weight: 700; 
-            text-align: center;
-            flex: 1;
-        }
-
-        .icon-btn { 
-            background: none; 
-            border: none; 
-            color: var(--text-color); 
-            font-size: 24px; 
-            cursor: pointer; 
-            padding: 5px;
-            width: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
+        /* ... (Header and other existing styles remain the same) ... */
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background-color: var(--bg-color); z-index: 10; }
+        .header h1 { font-size: 20px; font-weight: 700; text-align: center; flex: 1; }
+        .icon-btn { background: none; border: none; color: var(--text-color); font-size: 24px; cursor: pointer; padding: 5px; width: 40px; display: flex; align-items: center; justify-content: flex-start; }
         .header-spacer { width: 40px; }
+        .month-display { padding: 10px 20px 25px; display: flex; flex-direction: column; }
+        .month-text { font-size: 28px; font-weight: 700; color: var(--text-color); letter-spacing: -0.5px; }
+        .sub-text { font-size: 14px; color: var(--text-secondary); margin-top: 4px; font-weight: 500; }
+        .list-container { flex: 1; padding: 0 20px 40px; overflow-y: auto; }
+        .card { display: flex; align-items: center; margin-bottom: 20px; background-color: var(--card-bg); border: var(--card-border); padding: 16px; border-radius: 16px; box-shadow: var(--shadow); transition: transform 0.2s ease; cursor: pointer; }
+        .card:active { transform: scale(0.98); }
+        .logo-box { width: 50px; height: 50px; background-color: var(--logo-bg); border-radius: 10px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; overflow: hidden; }
+        .logo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .card-content { margin-left: 16px; display: flex; flex-direction: column; justify-content: center; flex: 1; }
+        .card-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; color: var(--text-color); }
+        
+        /* --- NEW: Button style instead of Link --- */
+        .action-text {
+            display: flex; align-items: center; color: var(--accent-color); 
+            font-size: 14px; font-weight: 600; width: fit-content;
+        }
+        .action-text ion-icon { margin-right: 4px; font-size: 16px; }
 
-        /* Month Display */
-        .month-display { 
-            padding: 10px 20px 25px; 
+        /* --- NEW: PDF Modal Styles --- */
+        .pdf-modal {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            z-index: 100;
             display: flex;
             flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .month-text { 
-            font-size: 28px; 
-            font-weight: 700; 
-            color: var(--text-color);
-            letter-spacing: -0.5px;
+        .pdf-modal.open {
+            transform: translateY(0);
         }
-        .sub-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            font-weight: 500;
+        .modal-header {
+            display: flex; align-items: center; padding: 15px 20px;
+            border-bottom: 1px solid var(--text-secondary);
         }
-
-        /* Scrollable List Area */
-        .list-container { 
-            flex: 1; 
-            padding: 0 20px 40px; 
-            overflow-y: auto; 
+        .close-btn {
+            background: none; border: none; color: var(--text-color);
+            font-size: 28px; cursor: pointer;
         }
-
-        /* Card Styles */
-        .card { 
-            display: flex; 
-            align-items: center; 
-            margin-bottom: 20px; 
-            background-color: var(--card-bg);
-            border: var(--card-border);
-            padding: 16px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s ease;
+        .modal-title {
+            flex: 1; text-align: center; font-weight: 600; font-size: 18px;
         }
-
-        .card:active { transform: scale(0.98); }
-
-        /* Container for the image */
-        .logo-box {
-            width: 50px; height: 50px; 
-            background-color: var(--logo-bg); 
-            border-radius: 10px;
-            display: flex; justify-content: center; align-items: center; 
-            flex-shrink: 0; 
-            position: relative;
-            overflow: hidden; /* Ensures image stays within rounded corners */
+        .pdf-frame {
+            flex: 1; width: 100%; border: none; background: #fff;
         }
-
-        /* Style for the image itself */
-        .logo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Makes sure image fills the box perfectly */
-        }
-        
-        .card-content { 
-            margin-left: 16px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            flex: 1;
-        }
-        
-        .card-title { 
-            font-size: 17px; 
-            font-weight: 600; 
-            margin-bottom: 6px; 
-            color: var(--text-color); 
-        }
-        
-        .link-btn {
-            display: flex; 
-            align-items: center; 
-            text-decoration: none;
-            color: var(--accent-color); 
-            font-size: 14px; 
-            font-weight: 600; 
-            width: fit-content;
-        }
-        .link-btn ion-icon { margin-right: 4px; font-size: 16px; }
-
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        
         
         <header class="header">
             <button class="icon-btn"><ion-icon name="arrow-back-outline"></ion-icon></button>
@@ -189,72 +123,68 @@
         </div>
 
         <div class="list-container">
-
-            <div class="card">
-                <div class="logo-box">
-                    <img src="photo_2025-12-21_23-12-13.jpg" alt="Week 1 Image">
-                </div>
+            
+            
+            <div class="card" onclick="openPdf('Week 1', 'week1.pdf')">
+                <div class="logo-box"><img src="photo_2025-12-21_23-12-13.jpg" alt="Week 1"></div>
                 <div class="card-content">
                     <div class="card-title">Week 1</div>
-                    <a href="https://www.dropbox.com/scl/fo/d48xej7z3qm040ijw5swf/AJVwyEB4ZJi7MNt-LmTzJ10?rlkey=qkglfvlepuwxu61p7tsyowit6&st=wwpu7kv4&dl=0" target="_blank" class="link-btn">
+                    <div class="action-text">
                         <ion-icon name="document-text-outline"></ion-icon> View Material
-                    </a>
+                    </div>
                 </div>
                 <ion-icon name="chevron-forward" style="color: var(--text-secondary);"></ion-icon>
             </div>
 
-            <div class="card">
-                <div class="logo-box">
-                    <img src="photo_2025-12-21_23-12-13.jpg" alt="Week 2 Image">
-                </div>
+            
+            <div class="card" onclick="openPdf('Week 2', 'week2.pdf')">
+                <div class="logo-box"><img src="photo_2025-12-21_23-12-13.jpg" alt="Week 2"></div>
                 <div class="card-content">
                     <div class="card-title">Week 2</div>
-                    <a href="https://www.dropbox.com/scl/fo/d48xej7z3qm040ijw5swf/AJVwyEB4ZJi7MNt-LmTzJ10?rlkey=qkglfvlepuwxu61p7tsyowit6&st=wwpu7kv4&dl=0" target="_blank" class="link-btn">
+                    <div class="action-text">
                         <ion-icon name="document-text-outline"></ion-icon> View Material
-                    </a>
+                    </div>
                 </div>
                 <ion-icon name="chevron-forward" style="color: var(--text-secondary);"></ion-icon>
             </div>
-
-            <div class="card">
-                <div class="logo-box">
-                     <img src="photo_2025-12-21_23-12-13.jpg" alt="Week 3 Image">
-                </div>
-                <div class="card-content">
-                    <div class="card-title">Week 3</div>
-                    <a href="https://www.dropbox.com/scl/fo/d48xej7z3qm040ijw5swf/AJVwyEB4ZJi7MNt-LmTzJ10?rlkey=qkglfvlepuwxu61p7tsyowit6&st=wwpu7kv4&dl=0" target="_blank" class="link-btn">
-                        <ion-icon name="document-text-outline"></ion-icon> View Material
-                    </a>
-                </div>
-                <ion-icon name="chevron-forward" style="color: var(--text-secondary);"></ion-icon>
-            </div>
-
-            <div class="card">
-                <div class="logo-box">
-                     <img src="photo_2025-12-21_23-12-13.jpg" alt="Week 4 Image">
-                </div>
-                <div class="card-content">
-                    <div class="card-title">Week 4</div>
-                    <a href="https://www.dropbox.com/scl/fo/d48xej7z3qm040ijw5swf/AJVwyEB4ZJi7MNt-LmTzJ10?rlkey=qkglfvlepuwxu61p7tsyowit6&st=wwpu7kv4&dl=0" target="_blank" class="link-btn">
-                        <ion-icon name="document-text-outline"></ion-icon> View Material
-                    </a>
-                </div>
-                <ion-icon name="chevron-forward" style="color: var(--text-secondary);"></ion-icon>
-            </div>
-
         </div>
+
+        
+        <div class="pdf-modal" id="pdfModal">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closePdf()"><ion-icon name="close-outline"></ion-icon></button>
+                <span class="modal-title" id="modalTitle">Document</span>
+                <div style="width: 28px;"></div> 
+            </div>
+            <iframe id="pdfFrame" class="pdf-frame" src=""></iframe>
+        </div>
+
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const dateElement = document.getElementById('current-month-text');
             const now = new Date();
-            const formattedDate = now.toLocaleDateString('en-US', { 
-                month: 'long', 
-                year: 'numeric' 
-            });
-            dateElement.textContent = formattedDate;
+            dateElement.textContent = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         });
+
+        const modal = document.getElementById('pdfModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const pdfFrame = document.getElementById('pdfFrame');
+
+        function openPdf(title, url) {
+            modalTitle.textContent = title;
+            // NOTE: Dropbox links often block iframes. 
+            // Best practice: Upload PDFs to your Cloudflare project and use relative paths (e.g., 'week1.pdf')
+            pdfFrame.src = url;
+            modal.classList.add('open');
+        }
+
+        function closePdf() {
+            modal.classList.remove('open');
+            // clear src to stop loading/playing when closed
+            setTimeout(() => { pdfFrame.src = ''; }, 300);
+        }
     </script>
 
 </body>
